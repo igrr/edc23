@@ -9,7 +9,9 @@
   "dependencies": {
     "@slidev/cli": "^0.42.5",
     "@slidev/theme-default": "latest",
-    "@slidev/theme-seriph": "latest"
+    "@slidev/theme-seriph": "latest",
+    "@katzumi/slidev-addon-qrcode": "latest",
+    "slidev-addon-asciinema": "latest"
   },
   "devDependencies": {
     "@iconify-json/uim": "^1.1.5",
