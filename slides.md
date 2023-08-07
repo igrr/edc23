@@ -11,10 +11,9 @@ addons:
 
 ---
 
-
 # Developing, Publishing, and Maintaining Components for ESP-IDF
 
-## Ivan Grokhotkov, VP of Software Platforms
+## Ivan Grokhotkov<br>VP of Software Platforms @ Espressif
 
 ### 2023/09/13
 
@@ -624,17 +623,16 @@ void app_main(void)
 <div class="grid grid-cols-2 gap-2">
 <div>
 
-* What the test app does is up to you:
-  <v-clicks>
+What the test app does is up to you:
+<v-clicks>
 
-  * Run a unit test framework
-    * [Docs <mdi-launch />](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/unit-tests.html)
-  * Use `linux` target to test on host
-    * [Docs <mdi-launch />](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/host-apps.html)
-    * Example: [esp-idf-cxx <mdi-launch />](https://github.com/espressif/esp-idf-cxx/tree/main/host_test)
-  * Run a more complex integration test
-
-  </v-clicks>
+* Run a unit test framework
+  * [Docs <mdi-launch />](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/unit-tests.html)
+* Use `linux` target to test on host
+  * [Docs <mdi-launch />](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/host-apps.html)
+  * Example: [esp-idf-cxx <mdi-launch />](https://github.com/espressif/esp-idf-cxx/tree/main/host_test)
+* Run a more complex integration test
+</v-clicks>
 
 </div>
 <div>
@@ -1018,13 +1016,32 @@ So far, we have:
 
 [Versioning scheme <mdi-launch />](https://docs.espressif.com/projects/idf-component-manager/en/latest/reference/versioning.html) is similar to [semver <mdi-launch />](https://semver.org/):
 
+<div class="big-code">
+
 ```
 major.minor.patch~revision-prerelease+build
 ```
-
-<div v-click class="bg-slate-100 p-2 my-4">
-<mdi-help-rhombus /> Where to store the version?
 </div>
+
+Examples:
+
+<v-clicks>
+
+* 1.0.0 — Release version
+* 1.1.0-rc1 — Pre-release version
+* 5.2.3~1 and 5.2.3~2 — Two different release versions for an upstream 5.2.3 library release
+
+</v-clicks>
+
+<style>
+  .big-code code {
+    font-size: 2em;
+  }
+</style>
+
+---
+
+# Where to store the version?
 
 <div class="grid grid-cols-2 gap-4">
 
@@ -1194,9 +1211,9 @@ upload_component:
 
 # Compilation checks (1)
 
-Option A: Use [espressif/esp-idf-ci-action](https://github.com/espressif/esp-idf-ci-action), create a build matrix manually.
+### Option A: Use [espressif/esp-idf-ci-action](https://github.com/espressif/esp-idf-ci-action), create a build matrix manually.
 
-<div class="grid grid-flow-col auto-cols-auto gap-4">
+<div class="grid grid-flow-col auto-cols-auto gap-4 py-4">
 
 <div>
 
@@ -1252,9 +1269,9 @@ jobs:
 
 # Compilation checks (2)
 
-## Option B: Use [idf-build-apps <mdi-launch />](https://docs.espressif.com/projects/idf-build-apps/en/latest/)
+### Option B: Use [idf-build-apps <mdi-launch />](https://docs.espressif.com/projects/idf-build-apps/en/latest/)
 
-<div class="grid grid-flow-col auto-cols-auto gap-4">
+<div class="grid grid-flow-col auto-cols-auto gap-4 py-4">
 
 <div>
 
@@ -1532,6 +1549,8 @@ flowchart TD
 
 # Managing contributions
 
+<v-clicks>
+
 * Add [CONTRIBUTING.md <mdi-launch />](https://github.blog/2012-09-17-contributing-guidelines/) file to the repository:
   - What to pay attention to when opening a PR?
   - How to run tests?
@@ -1543,6 +1562,8 @@ flowchart TD
   - [Gitlab <mdi-launch />](https://docs.gitlab.com/ee/user/project/description_templates.html)
 * Enable builds and tests in PRs
 * Add [pre-commit <mdi-launch />](https://pre-commit.com/) hooks
+
+</v-clicks>
 
 ---
 
@@ -1625,22 +1646,23 @@ repos:
 
 ---
 
-# Summary
+# Summary and Checklist
 
 <div class="text-sm">
 
-| Step                 | Internal component | Public component |
-| -------------------- | ------------------ | ---------------- |
-| Code, CMakeLists.txt | <mdi-check /> | <mdi-check /> |
-| idf_component.yml    | If it has dependencies | <mdi-check /> |
-| Example              | <mdi-check />  | <mdi-check /> |
-| Tests                | <mdi-check />  | <mdi-check /> |
-| Build & test in CI   | <mdi-check />  | <mdi-check /> |
-| Contributing guide   | <mdi-check />  | <mdi-check /> |
-| Pre-commit hooks     | <mdi-check />  | <mdi-check /> |
-| README.md            | <mdi-check /> | <mdi-check /> |
-| LICENSE              |              | <mdi-check /> |
-| Upload to component registry  |   | <mdi-check /> |
+| Step                          | Internal component      | Public component  |
+| ----------------------------- | ----------------------- | ----------------- |
+| Code, CMakeLists.txt          | <mdi-check />           | <mdi-check />     |
+| idf_component.yml             | If it has dependencies  | <mdi-check />     |
+| Examples                      | <mdi-check />           | <mdi-check />     |
+| Tests                         | <mdi-check />           | <mdi-check />     |
+| Build & test in CI            | <mdi-check />           | <mdi-check />     |
+| Contributing guide            | <mdi-check />           | <mdi-check />     |
+| Pre-commit hooks              | <mdi-check />           | <mdi-check />     |
+| SBOM manifest (sbom.yml)      | <mdi-check />           | <mdi-check />     |
+| README.md                     | <mdi-check />           | <mdi-check />     |
+| LICENSE                       |                         | <mdi-check />     |
+| Upload to component registry  |                         | <mdi-check />     |
 
 </div>
 
