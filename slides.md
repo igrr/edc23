@@ -4,7 +4,7 @@ highlighter: shiki
 lineNumbers: false
 transition: fade
 title: Espressif DevCon23 — Creating Components for ESP-IDF
-layout: cover
+layout: intro
 addons:
   - "@katzumi/slidev-addon-qrcode"
   - slidev-addon-asciinema
@@ -12,7 +12,11 @@ addons:
 ---
 
 
-# Introduction
+# Developing, Publishing, and Maintaining Components for ESP-IDF
+
+## Ivan Grokhotkov, VP of Software Platforms
+
+### 2023/09/13
 
 <!--
 ESP-IDF projects are built from components. Some of the components are provided by ESP-IDF itself, and additional components may be added to the project. Since very early versions of IDF it was possible to include components from other sources. You could do this by adding components as submodules into the project `components` directory. You could also use Make or CMake to fetch the component from another repository. Or, you could use EXTRA_COMPONENT_DIRS build system variable to point to another directory where the component is located.
@@ -30,6 +34,44 @@ layout: default
 
 # Outline
 
+<div class="grid grid-cols-2 gap-2">
+<div>
+<v-clicks>
+
+* Developing
+  * Directory structure
+  * Adding source code
+  * Adding examples
+  * Adding tests
+* Publishing
+  * Releases
+  * Uploading to component registry
+  * Documentation
+* Maintaining
+  * Building and testing in CI
+  * Static analysis
+  * SBOMs
+  * Managing contributions
+
+</v-clicks>
+</div>
+
+<div class="container mx-auto">
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://igrr.github.io/edc23" class="object-center mx-auto py-10" width=180 height=180/>
+<div class="text-center">
+
+Slides: [https://igrr.github.io/edc23 <mdi-launch />](https://igrr.github.io/edc23)
+</div>
+</div>
+</div>
+
+<style>
+  .slidev-vclick-hidden {
+  opacity: 0.3 !important;
+  pointer-events: none;
+};
+</style>
+
 <!--
 What I will talk about today is how you can create your own components and share them with other developers, publicly or within your company.
 
@@ -45,7 +87,32 @@ Let's get started with developing a component.
 
 # Demo component
 
-<!-- In this talk, for illustration purposes I will be using a simple component, XXXX. You can find the source code in this repository. At the bottom of each slide where I introduce a new aspect of this component you will see a link to the corresponding commit.
+<div class="grid grid-cols-2 gap-2">
+<div>
+
+## PA1010D GPS module driver
+
+[Adafruit breakout board <mdi-launch />](https://www.adafruit.com/product/4415)
+
+[Datasheet <mdi-launch />](https://learn.adafruit.com/adafruit-mini-gps-pa1010d-module/downloads)
+
+Component on Github: <a href="https://github.com/igrr/pa1010d" class="text-sm">https://github.com/igrr/pa1010d <mdi-launch /></a>
+
+In component registry: <a href="https://components.espressif.com/components/igrr/pa1010d" class="text-sm">https://components.espressif.com/components/igrr/pa1010d <mdi-launch /></a>
+
+
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://github.com/igrr/pa1010d" class="object-center mx-auto py-6" width=150 height=150/>
+
+
+</div>
+<div>
+
+![](pa1010d.jpg)
+
+</div>
+</div>
+
+<!-- In this talk, for illustration purposes I will be using a simple component, pa1010d GPS driver. You can find the source code in this repository. At the bottom of each slide where I introduce a new aspect of this component you will see a link to the corresponding commit.
 This component is fairly simple: (describe what it does)
 
 TODO: Add a link and a QR code.
@@ -552,10 +619,74 @@ void app_main(void)
 
 ---
 
+# Adding a test app
+
+<div class="grid grid-cols-2 gap-2">
+<div>
+
+* What the test app does is up to you:
+  <v-clicks>
+
+  * Run a unit test framework
+    * [Docs <mdi-launch />](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/unit-tests.html)
+  * Use `linux` target to test on host
+    * [Docs <mdi-launch />](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/host-apps.html)
+    * Example: [esp-idf-cxx <mdi-launch />](https://github.com/espressif/esp-idf-cxx/tree/main/host_test)
+  * Run a more complex integration test
+
+  </v-clicks>
+
+</div>
+<div>
+
+```ini {8-15}
+📂 pa1010d/
+├── 🔧 CMakeLists.txt
+├── 📜 pa1010d.c
+├── 📂 include/
+│   └── 📜 pa1010d.h
+├── 📂 examples/
+│   └── 📁 pa1010d-example/
+└── 📂 test_apps/
+    └── 📂 pa1010d-unit-test/
+        ├── 🔧 CMakeLists.txt
+        ├── 📝 README.md
+        └── 📂 main/
+            ├── 📜 test_main.c
+            ├── 📜 test_pa1010d.c
+            └── 🔧 CMakeLists.txt
+```
+
+</div>
+</div>
+
+---
+
+# Other parts of the component
+
+<v-clicks>
+
+* CMakeLists.txt, source files, header files [(reference <mdi-launch />)](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/build-system.html)
+* Example and test applications
+* Documentation
+* idf_component.yml [(reference <mdi-launch />)](https://docs.espressif.com/projects/idf-component-manager/en/latest/reference/manifest_file.html)
+  - To describe the component
+  - To declare dependencies on other components
+* Kconfig file [(reference <mdi-launch />)](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/kconfig.html#introduction)
+  - To add configuration options (menuconfig)
+* `sdkconfig.rename` file [(reference <mdi-launch />)](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/kconfig.html#backward-compatibility-of-kconfig-options)
+  - For backward compatibility of Kconfig option names
+* Linker fragment file [(reference <mdi-launch />)](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/linker-script-generation.html)
+  - To place functions or data into specific memory regions
+* SBOM manifest [(beta <mdi-launch />)](https://github.com/espressif/esp-idf-sbom#manifest-file)
+
+</v-clicks>
+
+---
+
 # Adding component manifest
 
 <div class="grid grid-cols-2 gap-2">
-
 
 <div>
 
@@ -582,22 +713,54 @@ dependencies:
 
 </div>
 
-```ini {1,13}
+```ini {1,10}
 📂 pa1010d/
 ├── 🔧 CMakeLists.txt
 ├── 📜 pa1010d.c
 ├── 📂 include/
 │   └── 📜 pa1010d.h
 ├── 📂 examples/
-│   └── 📂 pa1010d-example/
-│       ├── 🔧 CMakeLists.txt
-│       └── 📂 main/
-│           ├── 🧩 idf_component.yml
-│           ├── 🔧 CMakeLists.txt
-│           └── 📜 pa1010-example.c
+│   └── 📁 pa1010d-example/
+├── 📂 test_apps/
+│   └── 📁 pa1010d-unit-test/
 └── 🧩 idf_component.yml
 ```
 
+</div>
+
+---
+
+# Setting up component repository
+
+<div class="grid grid-cols-2 gap-2">
+
+<div>
+
+* Add `README.md` with information about the component
+* Add license text in `LICENSE.txt`
+* Create a repository with `git init`, add `.gitignore` file
+* Add all the new files to Git and commit your changes
+
+</div>
+<div>
+
+```ini {1,11-14}
+📂 pa1010d/
+├── 🔧 CMakeLists.txt
+├── 📜 pa1010d.c
+├── 📂 include/
+│   └── 📜 pa1010d.h
+├── 📂 examples/
+│   └── 📁 pa1010d-example/
+├── 📂 test_apps/
+│   └── 📁 pa1010d-unit-test/
+├── 🧩 idf_component.yml
+├── 📝 README.md
+├── 📝 LICENSE.txt
+├── .gitignore
+└── 📁 .git/
+```
+</div>
 </div>
 
 ---
@@ -614,6 +777,14 @@ Once the component is ready, let's upload it:
 4. Use `compote component upload` to upload the version
 5. Open https://components.espressif.com/components/NAMESPACE/COMPONENT to see the result
 </v-clicks>
+
+---
+
+# Demo
+
+<RenderWhen context="main">
+  <Asciinema src="casts/compote-reg-login-upload.cast" :playerProps="{speed: 2, rows: 12}"/>
+</RenderWhen>
 
 ---
 layout: iframe-right
@@ -643,7 +814,7 @@ dependencies:
   idf: ">=4.4.0"
 ```
 
-
+<a href="https://components.espressif.com/components/igrr/pa1010d" class="text-xs">https://components.espressif.com/components/igrr/pa1010d <mdi-launch /></a>
 
 ---
 
@@ -702,29 +873,6 @@ dependencies:
     max-height: 330px;
 }
 </style>
-
-
----
-
-# Other parts of the component
-
-<v-clicks>
-
-* CMakeLists.txt, source files, header files [(reference <mdi-launch />)](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/build-system.html)
-* Example and test applications
-* idf_component.yml [(reference <mdi-launch />)](https://docs.espressif.com/projects/idf-component-manager/en/latest/reference/manifest_file.html)
-  - To describe the component
-  - To declare dependencies on other components
-* Kconfig file [(reference <mdi-launch />)](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/kconfig.html#introduction)
-  - To add configuration options (menuconfig)
-* `sdkconfig.rename` file [(reference <mdi-launch />)](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/kconfig.html#backward-compatibility-of-kconfig-options)
-  - For backward compatibility of Kconfig option names
-* Linker fragment file [(reference <mdi-launch />)](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/linker-script-generation.html)
-  - To place functions or data into specific memory regions
-* SBOM manifest [(beta <mdi-launch />)](https://github.com/espressif/esp-idf-sbom#manifest-file)
-
-</v-clicks>
-
 
 ---
 
@@ -789,6 +937,55 @@ dev_config_t config = {
 
 ---
 
+# Side note: alternative repository layouts
+
+* Repository layout described so far is the recommended one, but not the only one possible.
+* Not necessary to change the existing repository layout to publish an IDF component.
+
+<div class="grid grid-cols-2 gap-4 py-4">
+<div v-click>
+
+#### Option 1: IDF-related files in a subdirectory
+
+```ini
+📂 project/
+├── 📂 src/
+│   └── 📜 project.c
+├── 📂 include/
+│   └── 📜 project.h
+├── 📂 port/
+│   ├── 📂 idf/
+│   │   ├── 🧩 idf_component.yml
+│   │   ├── 📜 port_idf.c
+│   │   └── idf.cmake
+│   └── 📂 zephyr/
+│       ├── 📜 module.yml
+│       ├── 📜 port_zephyr.c
+│       └── zephyr.cmake
+└── 🔧 CMakeLists.txt
+```
+
+Example: [LVGL <mdi-launch />](https://github.com/lvgl/lvgl)
+</div>
+<div v-click>
+
+#### Option 2: Wrapper repository
+
+
+```ini
+📂 esp-project/
+├── 📁 upstream-project/
+├── 🧩 idf_component.yml
+├── 📜 port.c
+└── 🔧 CMakeLists.txt
+```
+
+Example: [esp-wolfssl <mdi-launch />](https://github.com/espressif/esp-wolfssl)
+</div>
+</div>
+
+---
+
 <div class="grid grid-cols-2 gap-4">
 <div>
 
@@ -798,6 +995,7 @@ So far, we have:
 
 * Created a component
 * Added an example
+* Added a test app
 * Added a manifest
 * Uploaded an initial version manually
 
@@ -807,11 +1005,10 @@ So far, we have:
 
 * Versioning the component
 * Private components
-* Setting up component repository
 * Uploading releases automatically
 * Setting up CI
-* Managing contributions
 * Adding documentation
+* Managing contributions
 
 </div></div>
 
@@ -853,7 +1050,6 @@ major.minor.patch~revision-prerelease+build
 * Add `version:` field to `idf_component.yml`
 * Try to upload new version on every commit
 * Use `compot component upload --allow-existing`
-  * Or the official Github Action
 
 </div>
 
@@ -907,30 +1103,6 @@ dependencies:
   # This is similar to setting EXTRA_COMPONENT_DIRS.
   protocol_examples_common:
     path: $IDF_PATH/examples/common_components/protocol_examples_common
-```
-
----
-
-# Setting up component repository
-
-```ini {1-13|14-17}
-📂 pa1010d/
-├── 🔧 CMakeLists.txt
-├── 📜 pa1010d.c
-├── 📂 include/
-│   └── 📜 pa1010d.h
-├── 📂 examples/
-│   └── 📂 pa1010d-example/
-│       ├── 🔧 CMakeLists.txt
-│       └── 📂 main/
-│           ├── 🧩 idf_component.yml
-│           ├── 🔧 CMakeLists.txt
-│           └── 📜 pa1010-example.c
-├── 🧩 idf_component.yml
-├── 📝 README.md
-├── 📝 LICENSE.md
-├── .gitignore
-└── 📁 .git/
 ```
 
 ---
@@ -1006,12 +1178,13 @@ upload_component:
 <v-clicks>
 
 * Compilation checks
-  * Compile the component for every supported IDF version and chip target.
-  * Compile with different Kconfig option settings.
+  * Compile the component for every supported IDF version and chip target
+  * Compile with different Kconfig option settings
 * Static analysis
 * Unit tests
+  * On host, emulator or real HW
 * Integration tests
-  * On real HW or in an emulator
+  * In an emulator or on real HW
 
 </v-clicks>
 
@@ -1049,7 +1222,7 @@ jobs:
         with:
           esp_idf_version: ${{ matrix.idf_ver }}
           target: ${{ matrix.idf_target }}
-          path: '.'
+          path: examples/pa1010d-example
 ```
 </div>
 <div>
@@ -1074,7 +1247,6 @@ jobs:
     max-height: 330px;
 }
 </style>
-
 
 ---
 
@@ -1119,7 +1291,7 @@ jobs:
 <mdi-plus-circle /> Builds for multiple chip targets and app configurations (sdkconfig)
 </div>
 <div>
-<mdi-plus-circle /> Configuration file can be used to customize build matrix
+<mdi-plus-circle /> Configuration file can be used to customize the build matrix
 </div>
 <div>
 <mdi-plus-circle /> Automatically parallelizes builds over several jobs
@@ -1144,11 +1316,50 @@ jobs:
 
 # Running unit and integration tests
 
-pytest-embedded 
+We recommend [pytest](https://docs.pytest.org/en/) with [pytest-embedded <mdi-launch />](https://docs.espressif.com/projects/pytest-embedded/en/latest/) plugin to set up your tests.
 
+<div class="grid grid-cols-2 gap-4">
+<div>
+
+### What can pytest <br> and pytest-embedded do?
+
+<v-clicks class="py-4">
+
+- Locate the binary of your test app
+  - built manually or using `idf-build-apps`
+- Flash it to the device over serial or JTAG
+- Send input to the test over serial
+- Check that serial output matches some conditions
+- Run the same test case on the real HW and on an emulator
+- Interact with the DUT over Wi-Fi, BLE, and other interfaces
+
+</v-clicks>
+
+</div>
+<div>
+
+### Simple example:
+
+```yaml
+def test_example(dut):
+    dut.expect_exact("Test app ready")
+    dut.write(b"run_tests\r\n")
+    dut.expect_exact("0 failed")
+    dut.expect_exact("Test pass")
+```
+
+<div class="text-sm">Works locally and in CI, with real HW or QEMU.</div>
+
+</div>
+
+</div>
+
+Find out more in the talk "Streamlining Development with CI/CD" at DevCon'23!
 ---
 
 # Running static analysis
+
+ESP-IDF has an optional integration with [clang-tidy <mdi-launch />](https://clang.llvm.org/extra/clang-tidy/) static analyzer.
 
 <div class="grid grid-flow-col auto-cols-auto gap-4">
 
@@ -1194,7 +1405,12 @@ idf.py clang-check \
 
 # Adding Software Bills of Materials
 
+ESP-IDF supports generation of SBOMs.
+
 <div class="grid grid-cols-2 gap-4">
+<div>
+
+#### What are the SBOMs?
 
 <v-clicks>
 
@@ -1208,6 +1424,14 @@ idf.py clang-check \
     * [CycloneDX <mdi-launch /> ](https://cyclonedx.org/)
 
 </v-clicks>
+</div>
+<div>
+
+<div v-click>
+
+#### How to use them?
+
+</div>
 
 <v-clicks>
 
@@ -1215,6 +1439,7 @@ idf.py clang-check \
 2. Project developers: use [`esp-idf-sbom create` <mdi-launch />](https://github.com/espressif/esp-idf-sbom#creating-sbom) to generate an SBOM in SPDX format
 
 </v-clicks>
+</div>
 </div>
 
 <!-- 
@@ -1226,20 +1451,215 @@ SPDX: an ISO/IEC 5962:2021 standard
 
 # Documentation
 
-Adding Doxygen comments
+Adding various kinds of documentation helps the users develop with your component:
 
-Running Doxygen
+1. Reference
+2. Explanation
+3. Tutorial
+4. How-to guide
 
-Integrating docsify
+Learn more about these types of documentation: [Diátaxis <mdi-launch />](https://diataxis.fr/)
 
+---
+
+# Minimal recommended documentation
+
+for an IDF component:
+
+<div class="grid grid-cols-2 gap-4">
+<div>
+
+<v-clicks>
+
+1. Use Doxygen comments in the header file to document your API.
+2. Use Doxygen and ESP fork of [doxybook <mdi-launch />](https://github.com/espressif/doxybook) to generate API.md.
+3. Describe how to use the API in README.md or inside the top-level `@file` comment.
+4. Component registry will render README.md and API.md on the component page.
+
+</v-clicks>
+</div><div>
+
+```mermaid
+flowchart TD
+    subgraph precommit [doxybook]
+    header["pa1010d.h"]
+    xml["Doxygen XML"]
+    header --> xml
+    api["API.md"]
+    xml --> api
+    end
+    readme["README.md"]
+    page["Component Registry\npage"]
+    api --> page
+    readme --> page
+```
+</div></div>
+
+
+---
+
+# Documentation in the repository
+
+<div class="grid grid-cols-2 gap-2">
+
+<div>
+
+```ini{1,5,11-13}
+📂 pa1010d/
+├── 🔧 CMakeLists.txt
+├── 📜 pa1010d.c
+├── 📂 include/
+│   └── 📜 pa1010d.h
+├── 📂 examples/
+│   └── 📁 pa1010d-example/
+├── 📂 test-apps/
+│   └── 📁 pa1010d-unit-test/
+├── 🧩 idf_component.yml
+├── 📝 API.md
+├── 🔧 Doxyfile
+├── 📝 README.md
+├── 📝 LICENSE.md
+├── .gitignore
+└── 📁 .git/
+```
+</div>
+<div>
+
+
+</div>
+</div>
 ---
 
 # Managing contributions
 
-* CONTRIBUTING.md
-* Issue and PR templates
-* Pre-commit hooks
-* Builds and tests in PRs
+* Add [CONTRIBUTING.md <mdi-launch />](https://github.blog/2012-09-17-contributing-guidelines/) file to the repository:
+  - What to pay attention to when opening a PR?
+  - How to run tests?
+  - Any code formatting, commit message guidelines?
+  - Adding entries to the Changelog file
+  - Release process
+* Add issue and PR templates
+  - [Github <mdi-launch />](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests)
+  - [Gitlab <mdi-launch />](https://docs.gitlab.com/ee/user/project/description_templates.html)
+* Enable builds and tests in PRs
+* Add [pre-commit <mdi-launch />](https://pre-commit.com/) hooks
 
 ---
 
+# Pre-commit hooks
+
+[pre-commit <mdi-launch />](https://pre-commit.com/) is a framework which simplifies adding Git pre-commit hooks:
+
+
+<div class="grid grid-cols-2 gap-2">
+
+<div>
+
+###### How to use it
+
+* Add `.pre-commit-config.yaml` to the repository
+* Each developer installs pre-commit:
+  ```bash
+  pip install pre-commit
+  pre-commit install
+  ```
+* During the commit:
+  - Most hooks can automatically fix the code
+  - Review the fixes, stage them, commit again
+* Optional: add a CI job which verifies that pre-commit checks pass
+</div>
+
+<div>
+
+
+###### Things you can check
+
+* C Code formatting
+* CMake formatting
+* Whitespace, line endings
+* Update API.md with [`doxybook` <mdi-launch />](https://github.com/espressif/doxybook)
+* [Commit message style <mdi-launch />](https://github.com/espressif/conventional-precommit-linter)
+* Find more hooks [here <mdi-launch />](https://pre-commit.com/hooks.html)
+</div>
+</div>
+
+---
+
+# Example pre-commit config
+
+```yml
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+    -   id: trailing-whitespace
+        types_or: [c, c++]
+    -   id: end-of-file-fixer
+        types_or: [c, c++]
+    -   id: check-merge-conflict
+    -   id: mixed-line-ending
+        types_or: [c, c++]
+        args: ['--fix=lf']
+-   repo: https://github.com/espressif/astyle_py.git
+    rev: v0.9.1
+    hooks:
+    -   id: astyle_py
+        args:
+        - '--style=otbs'
+        - '--indent=spaces=4'
+        - '--convert-tabs'
+        - '--attach-namespaces'
+        - '--attach-classes'
+        - '--align-pointer=name'
+        - '--align-reference=name'
+        - '--keep-one-line-statements'
+        - '--pad-header'
+        - '--pad-oper'
+```
+
+<style>
+.slidev-layout pre, .slidev-layout code {
+    max-height: 330px;
+}
+</style>
+
+---
+
+# Summary
+
+<div class="text-sm">
+
+| Step                 | Internal component | Public component |
+| -------------------- | ------------------ | ---------------- |
+| Code, CMakeLists.txt | <mdi-check /> | <mdi-check /> |
+| idf_component.yml    | If it has dependencies | <mdi-check /> |
+| Example              | <mdi-check />  | <mdi-check /> |
+| Tests                | <mdi-check />  | <mdi-check /> |
+| Build & test in CI   | <mdi-check />  | <mdi-check /> |
+| Contributing guide   | <mdi-check />  | <mdi-check /> |
+| Pre-commit hooks     | <mdi-check />  | <mdi-check /> |
+| README.md            | <mdi-check /> | <mdi-check /> |
+| LICENSE              |              | <mdi-check /> |
+| Upload to component registry  |   | <mdi-check /> |
+
+</div>
+
+
+<style>
+  .slidev-layout td {
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+  }
+</style>
+
+See the final result at: <a href="https://github.com/igrr/pa1010d">https://github.com/igrr/pa1010d <mdi-launch /></a>
+
+and in the component registry: <a href="https://components.espressif.com/components/igrr/pa1010d">https://components.espressif.com/components/igrr/pa1010d <mdi-launch /></a>
+
+---
+layout: intro
+---
+
+# Q&A
+
+## Thank you for your attention!
