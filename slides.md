@@ -107,7 +107,7 @@ In component registry: <a href="https://components.espressif.com/components/igrr
 </div>
 <div>
 
-![](pa1010d.jpg)
+![](/pa1010d.jpg)
 
 </div>
 </div>
