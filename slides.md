@@ -17,16 +17,6 @@ addons:
 
 ### 2023/09/13
 
-<!--
-ESP-IDF projects are built from components. Some of the components are provided by ESP-IDF itself, and additional components may be added to the project. Since very early versions of IDF it was possible to include components from other sources. You could do this by adding components as submodules into the project `components` directory. You could also use Make or CMake to fetch the component from another repository. Or, you could use EXTRA_COMPONENT_DIRS build system variable to point to another directory where the component is located.
-
-Last year, we have introduced IDF Component Manager and IDF Component Registry, which is another way of distributing components developed for ESP-IDF.
-
-IDF Component Registry acts as a place where Espressif and other developers can upload their components. IDF Component Manager is used by ESP-IDF to download components from the Registry or from private Git repositories.
-
-You can already find many components in the registry and use them in your projects.
--->
-
 ---
 layout: default
 ---
@@ -71,17 +61,6 @@ Slides: [https://igrr.github.io/edc23 <mdi-launch />](https://igrr.github.io/edc
 };
 </style>
 
-<!--
-What I will talk about today is how you can create your own components and share them with other developers, publicly or within your company.
-
-We will cover the following topics:
-- Best practices for creating a component
-- Releasing and distributing a component
-- Maintaining a component
-
-Let's get started with developing a component.
--->
-
 ---
 
 # Demo component
@@ -110,12 +89,6 @@ In component registry: <a href="https://components.espressif.com/components/igrr
 
 </div>
 </div>
-
-<!-- In this talk, for illustration purposes I will be using a simple component, pa1010d GPS driver. You can find the source code in this repository. At the bottom of each slide where I introduce a new aspect of this component you will see a link to the corresponding commit.
-This component is fairly simple: (describe what it does)
-
-TODO: Add a link and a QR code.
-  -->
 
 ---
 
@@ -178,7 +151,6 @@ void func(void)
 </div>
 
 </div>
-<!-- To get started, we'll use `idf.py create-component` command. This creates a component CMakeLists.txt file, a source file, and a header file. -->
 
 ---
 
@@ -295,11 +267,9 @@ esp_err_t pa1010d_get_nmea_msg(pa1010d_handle_t handle, char *out_buf, size_t ou
 </div>
 
 
-<!-- I already wrote the code for this device in another project, so I will simply copy it into the header and the source file. Show the result.
--->
 
 <style>
-.slidev-layout pre, .slidev-layout code {
+  .slidev-layout pre, .slidev-layout code {
     max-height: 330px;
 }
 </style>
@@ -379,7 +349,6 @@ stateDiagram-v2
 
 </div>
 
-<!-- Okay, now we have the component, how do we check that it works? We can create a test application, or example, or both. Let's create an example, first. -->
 
 ---
 
@@ -470,7 +439,6 @@ void app_main(void)
 </div>
 
 </div>
-
 
 ---
 
@@ -598,9 +566,6 @@ void app_main(void)
 </div>
 </div>
 
-
-<!-- I already wrote the code for this device in another project, so I will simply copy it into the header and the source file. Show the result.
--->
 
 <style>
 .slidev-layout pre, .slidev-layout code {
@@ -1165,7 +1130,7 @@ jobs:
 
 ---
 
-# Uploading releases automatically (Gitlab)
+# Uploading releases automatically (GitLab)
 
 ###### .gitlab-ci.yml
 
@@ -1204,8 +1169,6 @@ upload_component:
   * In an emulator or on real HW
 
 </v-clicks>
-
-<!-- Refer to another talk for idf-build-apps and pytest-embedded -->
 
 ---
 
@@ -1361,7 +1324,7 @@ We recommend [pytest](https://docs.pytest.org/en/) with [pytest-embedded <mdi-la
 def test_example(dut):
     dut.expect_exact("Test app ready")
     dut.write(b"run_tests\r\n")
-    dut.expect_exact("0 failed")
+    dut.expect_exact(" 0 failed")
     dut.expect_exact("Test pass")
 ```
 
@@ -1372,6 +1335,7 @@ def test_example(dut):
 </div>
 
 Find out more in the talk "Streamlining Development with CI/CD" at DevCon'23!
+
 ---
 
 # Running static analysis
@@ -1386,7 +1350,7 @@ ESP-IDF has an optional integration with [clang-tidy <mdi-launch />](https://cla
 
 - Use [idf.py clang-check <mdi-launch /> ](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/tools/idf-clang-tidy.html) to execute clang-tidy
 - Convert the warnings into one of the common report formats (Codeclimate, SARIF, HTML)
-- Upload the report to GitHub or Gitlab
+- Upload the report to GitHub or GitLab
 
 </v-clicks>
 <div v-click>
@@ -1512,14 +1476,14 @@ flowchart TD
 ```
 </div></div>
 
-
+---
+layout: iframe-right
+url: >-
+  https://components.espressif.com/components/igrr/pa1010d/versions/0.0.3
+class: text-left
 ---
 
 # Documentation in the repository
-
-<div class="grid grid-cols-2 gap-2">
-
-<div>
 
 ```ini{1,5,11-13}
 📂 pa1010d/
@@ -1539,12 +1503,7 @@ flowchart TD
 ├── .gitignore
 └── 📁 .git/
 ```
-</div>
-<div>
 
-
-</div>
-</div>
 ---
 
 # Managing contributions
@@ -1559,7 +1518,7 @@ flowchart TD
   - Release process
 * Add issue and PR templates
   - [Github <mdi-launch />](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests)
-  - [Gitlab <mdi-launch />](https://docs.gitlab.com/ee/user/project/description_templates.html)
+  - [GitLab <mdi-launch />](https://docs.gitlab.com/ee/user/project/description_templates.html)
 * Enable builds and tests in PRs
 * Add [pre-commit <mdi-launch />](https://pre-commit.com/) hooks
 
